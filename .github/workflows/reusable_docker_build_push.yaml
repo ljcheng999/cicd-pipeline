@@ -12,24 +12,36 @@ on:
       DOCKER_FILE_LOCATION:
         required: true
         type: string
-      VERACODE_CLI_VERSION:
-        required: true
+
+      BUILD_ARGS:
+        default: ""
+        description: Docker Build arguments
+        required: false
         type: string
-      TERRAFORM_VERSION:
-        required: true
-        type: string
-      KUBE_VERSION:
-        required: true
-        type: string
-      HELM_VERSION:
-        required: true
-        type: string
-      AWS_VERSION:
-        required: true
-        type: string
-      YQ_VERSION:
-        required: true
-        type: string
+      # DOCKER_FILE_LOCATION:
+      #   required: true
+      #   type: string
+      # VERACODE_CLI_VERSION:
+      #   required: true
+      #   type: string
+      # TERRAFORM_VERSION:
+      #   required: true
+      #   type: string
+      # KUBE_VERSION:
+      #   required: true
+      #   type: string
+      # HELM_VERSION:
+      #   required: true
+      #   type: string
+      # AWS_VERSION:
+      #   required: true
+      #   type: string
+      # YQ_VERSION:
+      #   required: true
+      #   type: string
+      # DOCKER_TAG_VERSION:
+      #   required: true
+      #   type: string
 
     secrets:
       REPO_NAME:
@@ -40,57 +52,50 @@ on:
         required: true
 
 jobs:
-  run-docker:
+  build-push:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        run: |
-          echo "branch: ${{ needs.variables.outputs.branch }}"
-
       - name: Login to the Registry
         uses: docker/login-action@v3
         with:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          REPO_NAME: ${{ secrets.REPO_NAME }}
-          DOCKERFILE_PATH: ${{ inputs.DOCKER_FILE_LOCATION }}
+          # registry: ""
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          # REPO_NAME: ${{ secrets.REPO_NAME }}
+          # DOCKERFILE_PATH: ${{ inputs.DOCKER_FILE_LOCATION }}
 
-      - name: echo values
+      # - name: Build Docker image
+      #   run: |
+      #     echo "branch: ${{ needs.variables.outputs.branch }}"
+      #     docker build -t ${{ secrets.REPO_NAME }}:${{ inputs.DOCKER_TAG_VERSION }} -f ${{ inputs.DOCKER_FILE_LOCATION }} .
+
+      # - name: echo values
+      #   run: |
+      #     echo "DOCKERFILE_PATH - ${DOCKERFILE_PATH}"
+      #     echo "REPO_NAME - ${REPO_NAME}"
+
+      - name: Substitute build args
+        if: ${{ inputs.BUILD_ARGS != '' }}
         run: |
-          echo "DOCKERFILE_PATH - ${DOCKERFILE_PATH}"
-          echo "REPO_NAME - ${REPO_NAME}"
-      # - name: Set the tag
-      #   run:
+          {
+            echo 'BUILD_ARGS<<EOF'
+            echo "${{ inputs.BUILD_ARGS }}"
+            echo EOF
+          } >> "$GITHUB_ENV"
 
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   build-and-run:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v3
-
-#       - name: Download Dockerfile from external repository
-#         run: |
-#           curl -LJO https://raw.githubusercontent.com/external/repo/main/path/to/dockerfile
-#         working-directory: path/to/your/dockerfile/directory
-
-#       - name: Build Docker image
-#         run: |
-#           docker build -t my-docker-image .
-
-#     - name: Run Docker container
-#       run: |
-#         docker run -d --name my-container my-docker-image
-
-#     - name: Run arbitrary code inside the container
-#       run: |
-#         docker exec my-container ./build-my-application
+      - name: Build and Push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ inputs.DOCKER_FILE_LOCATION }}
+          platforms: ${{ inputs.TARGETOS }}/${{ inputs.TARGETARCH }}
+          # platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            ${{ inputs.BUILD_ARGS }}
+          tags: ${{ env.DOCKER_TAG_VERSION }}
+          # labels: ${{ steps.meta.outputs.labels }}
