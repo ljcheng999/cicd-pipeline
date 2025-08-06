@@ -10,9 +10,12 @@ on:
         required: true
         type: string
       DOCKER_FILE_LOCATION:
+        default: "Dockerfile"
         required: true
         type: string
-
+      DOCKER_TAG_VERSION:
+        required: true
+        type: string
       BUILD_ARGS:
         default: ""
         description: Docker Build arguments
@@ -64,18 +67,11 @@ jobs:
           # registry: ""
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          # REPO_NAME: ${{ secrets.REPO_NAME }}
-          # DOCKERFILE_PATH: ${{ inputs.DOCKER_FILE_LOCATION }}
 
       # - name: Build Docker image
       #   run: |
       #     echo "branch: ${{ needs.variables.outputs.branch }}"
       #     docker build -t ${{ secrets.REPO_NAME }}:${{ inputs.DOCKER_TAG_VERSION }} -f ${{ inputs.DOCKER_FILE_LOCATION }} .
-
-      # - name: echo values
-      #   run: |
-      #     echo "DOCKERFILE_PATH - ${DOCKERFILE_PATH}"
-      #     echo "REPO_NAME - ${REPO_NAME}"
 
       - name: Substitute build args
         if: ${{ inputs.BUILD_ARGS != '' }}
@@ -93,9 +89,8 @@ jobs:
           context: .
           file: ${{ inputs.DOCKER_FILE_LOCATION }}
           platforms: ${{ inputs.TARGETOS }}/${{ inputs.TARGETARCH }}
-          # platforms: linux/amd64,linux/arm64
+          tags: ${{ inputs.DOCKER_TAG_VERSION }}
           push: true
           build-args: |
             ${{ inputs.BUILD_ARGS }}
-          tags: ${{ env.DOCKER_TAG_VERSION }}
           # labels: ${{ steps.meta.outputs.labels }}
