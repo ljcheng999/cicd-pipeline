@@ -3,7 +3,7 @@ name: Reusable workflow for the Build and Run Docker Image
 on:
   workflow_call:
     inputs:
-      REPO_NAME:
+      repo-name:
         required: true
         type: string
       # tag:
@@ -34,6 +34,7 @@ jobs:
         with:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
+          reponame: ${{ inputs.repo-name }}
 
       # - name: Set the tag
       #   run:
