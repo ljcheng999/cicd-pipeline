@@ -3,18 +3,16 @@ name: Reusable workflow for the Build and Run Docker Image
 on:
   workflow_call:
     inputs:
+      TARGETOS:
+        required: true
+        type: string
+      TARGETARCH:
+        required: true
+        type: string
       DOCKER_FILE_LOCATION:
         required: true
         type: string
 
-    # tag:
-    #   type: string
-    # username:
-    #   required: true
-    #   type: string
-    # password:
-    #   required: true
-    #   type: string
     secrets:
       REPO_NAME:
         required: true
