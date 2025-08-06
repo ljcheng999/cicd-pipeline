@@ -2,21 +2,21 @@ name: Reusable workflow for the Build and Run Docker Image
 
 on:
   workflow_call:
-    inputs:
+    # inputs:
+    #   repo-name:
+    #     required: true
+    #     type: string
+    # tag:
+    #   type: string
+    # username:
+    #   required: true
+    #   type: string
+    # password:
+    #   required: true
+    #   type: string
+    secrets:
       repo-name:
         required: true
-        type: string
-      # tag:
-      #   type: string
-      # username:
-      #   required: true
-      #   type: string
-      # password:
-      #   required: true
-      #   type: string
-    # secrets:
-    #   token:
-    #     required: true
 
 jobs:
   run-docker:
@@ -34,7 +34,7 @@ jobs:
         with:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          reponame: ${{ inputs.repo-name }}
+          reponame: ${{ secrets.repo-name }}
 
       # - name: Set the tag
       #   run:
