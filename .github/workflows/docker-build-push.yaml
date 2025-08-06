@@ -3,11 +3,11 @@ name: Reusable workflow for the Build and Run Docker Image
 on:
   workflow_call:
     inputs:
-      repo-name:
+      REPO_NAME:
         required: true
         type: string
-      tag:
-        type: string
+      # tag:
+      #   type: string
       # username:
       #   required: true
       #   type: string
