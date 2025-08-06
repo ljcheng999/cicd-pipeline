@@ -12,6 +12,24 @@ on:
       DOCKER_FILE_LOCATION:
         required: true
         type: string
+      VERACODE_CLI_VERSION:
+        required: true
+        type: string
+      TERRAFORM_VERSION:
+        required: true
+        type: string
+      KUBE_VERSION:
+        required: true
+        type: string
+      HELM_VERSION:
+        required: true
+        type: string
+      AWS_VERSION:
+        required: true
+        type: string
+      YQ_VERSION:
+        required: true
+        type: string
 
     secrets:
       REPO_NAME:
