@@ -6,9 +6,7 @@ on:
       DOCKER_FILE_LOCATION:
         required: true
         type: string
-    #   repo-name:
-    #     required: true
-    #     type: string
+
     # tag:
     #   type: string
     # username:
@@ -18,7 +16,11 @@ on:
     #   required: true
     #   type: string
     secrets:
-      repo-name:
+      REPO_NAME:
+        required: true
+      USERNAME:
+        required: true
+      PASSWORD:
         required: true
 
 jobs:
@@ -35,13 +37,18 @@ jobs:
       - name: Login to the Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          reponame: ${{ secrets.repo-name }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          REPO_NAME: ${{ secrets.REPO_NAME }}
           DOCKERFILE_PATH: ${{ inputs.DOCKER_FILE_LOCATION }}
 
+      - name: echo values
+        run: |
+          echo "DOCKERFILE_PATH - ${DOCKERFILE_PATH}"
+          echo "REPO_NAME - ${REPO_NAME}"
       # - name: Set the tag
       #   run:
+
 # on:
 #   push:
 #     branches:
