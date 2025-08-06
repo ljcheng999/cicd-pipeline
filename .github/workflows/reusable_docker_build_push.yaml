@@ -4,16 +4,23 @@ on:
   workflow_call:
     inputs:
       TARGETOS:
+        default: "linux"
+        description: "Default Operating System"
         required: true
         type: string
       TARGETARCH:
+        default: "amd64"
+        description: "Default Operating Architecture"
         required: true
         type: string
       DOCKER_FILE_LOCATION:
         default: "Dockerfile"
-        required: true
+        description: "Dockerfile"
+        required: false
         type: string
       DOCKER_TAG_VERSION:
+        default: ""
+        description: "Docker tag"
         required: true
         type: string
       BUILD_ARGS:
@@ -21,7 +28,6 @@ on:
         description: Docker Build arguments
         required: false
         type: string
-
     secrets:
       REPO_NAME:
         required: true
@@ -44,11 +50,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
 
-      # - name: Build Docker image
-      #   run: |
-      #     echo "branch: ${{ needs.variables.outputs.branch }}"
-      #     docker build -t ${{ secrets.REPO_NAME }}:${{ inputs.DOCKER_TAG_VERSION }} -f ${{ inputs.DOCKER_FILE_LOCATION }} .
-
       - name: Substitute build args
         if: ${{ inputs.BUILD_ARGS != '' }}
         run: |
@@ -61,7 +62,10 @@ jobs:
       - name: look where I am
         run: |
           echo $PWD
+          echo "1"
           ls -al .
+          echo "2"
+          ls -al ../
 
       - name: Build and Push by digest
         id: build
