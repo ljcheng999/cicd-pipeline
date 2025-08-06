@@ -74,7 +74,7 @@ jobs:
           context: .
           file: ${{ inputs.DOCKER_FILE_LOCATION }}
           platforms: ${{ inputs.TARGETOS }}/${{ inputs.TARGETARCH }}
-          tags: ${{ inputs.DOCKER_REPO }}/${{ inputs.DOCKER_TAG_VERSION }}
+          tags: ${{ inputs.DOCKER_REPO }}:${{ inputs.DOCKER_TAG_VERSION }}
           push: true
           build-args: |
             ${{ inputs.BUILD_ARGS }}
